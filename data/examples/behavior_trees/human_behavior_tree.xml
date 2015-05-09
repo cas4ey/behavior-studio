@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<BehaviorTree version="1.2.4">
+	<nodeInfo Lib="example_human_nodes" Name="ResetBoardingTask">
+		<events>
+			<outgoing name="EventBoardingCancel"/>
+		</events>
+	</nodeInfo>
+	<nodeInfo Lib="example_human_nodes" Name="SetupBoardingTask">
+		<events>
+			<outgoing name="EventBoardingStart"/>
+		</events>
+	</nodeInfo>
+	<nodeInfo Lib="example_human_nodes" Name="Board">
+		<events>
+			<outgoing name="EventBoardingEnd"/>
+		</events>
+	</nodeInfo>
+	<Node BranchName="Idle" Lib="example_general_nodes" Name="Repeater" Type="Decorator" uid="1709586889">
+		<Settings count="-1" end_on_complete="0" end_on_fail="0"/>
+		<Node Lib="example_general_nodes" Name="Sequence" Type="Composite" uid="3802621099">
+			<Settings/>
+			<Node Lib="example_human_nodes" Name="SimpleWait" Type="Leaf" uid="4097294754">
+				<Settings maxTime="6.0" minTime="3.0">
+					<Flags aiming="0" lying="0" sitting="0" standing="1"/>
+				</Settings>
+			</Node>
+			<Node Creator="Wait" Lib="example_human_nodes" Name="WaitAnimation" Type="Leaf" uid="3067662210">
+				<Settings/>
+			</Node>
+			<Node Lib="example_human_nodes" Name="Wander" Type="Leaf" uid="1902571876">
+				<Settings maxRange="5.0" minRange="3.0">
+					<Flags crawl="0" run="0" sneak="0" walk="1"/>
+				</Settings>
+			</Node>
+			<Node Creator="Move" Lib="example_human_nodes" Name="MoveAnimaiton" Type="Leaf" uid="1829895543">
+				<Settings destination="TargetPoint" movementFlags="MovementFlags" takeWeaponFlag="takeWeapon"/>
+			</Node>
+		</Node>
+	</Node>
+	<Node BranchName="ResetBoardingState" Lib="example_general_nodes" Name="SetValue" Type="Leaf" uid="3070718820">
+		<Settings type="char" value="0" variable="boarding/state"/>
+	</Node>
+	<Node BranchName="RouteMove" Lib="example_general_nodes" Name="Sequence" Type="Composite" uid="1267175587">
+		<Settings/>
+		<Node Lib="example_human_nodes" Name="SetupRoutePoint" Type="Leaf" uid="994174364">
+			<Settings/>
+		</Node>
+		<Node Creator="Move" Lib="example_human_nodes" Name="MoveAnimaiton" Type="Leaf" uid="977416744">
+			<Settings destination="TargetPoint" movementFlags="MovementFlags" takeWeaponFlag="takeWeapon"/>
+		</Node>
+		<Node Lib="example_human_nodes" Name="SetNextRoutePoint" Type="Leaf" uid="312675178">
+			<Settings/>
+		</Node>
+	</Node>
+	<Node BranchName="SetBoardingState" Lib="example_general_nodes" Name="SetValue" Type="Leaf" uid="2011727640">
+		<Settings type="char" value="1" variable="boarding/state"/>
+	</Node>
+	<Node BranchName="Wait" Lib="example_general_nodes" Name="Sequence" Type="Composite" uid="3405766072">
+		<Settings/>
+		<Node Lib="example_human_nodes" Name="SetupWaitWaypoint" Type="Leaf" uid="2083554007">
+			<Settings/>
+		</Node>
+		<Node Lib="example_general_nodes" Name="Parallel" Type="Composite" uid="102860640">
+			<Settings complete_once="1" fail_once="1"/>
+			<Node Lib="example_general_nodes" Name="Text" Type="debug Decorator" uid="565034583">
+				<Settings debugState="0" state="1" text="-------- Counting time"/>
+				<Node Lib="example_human_nodes" Name="WaitTask" Type="Leaf" uid="175902312">
+					<Settings/>
+				</Node>
+			</Node>
+			<Node Lib="example_general_nodes" Name="Switch" Type="Composite" uid="2717002181">
+				<Settings monitor="0"/>
+				<Condition Lib="example_general_nodes" Name="SimpleTranslator" Type="Single" uid="1477116634">
+					<Settings type="bool" variable="waitTask/enableWandering"/>
+				</Condition>
+				<Node Creator="Wait" Lib="example_human_nodes" Name="WaitAnimation" Type="Leaf" uid="3516370690">
+					<Settings/>
+				</Node>
+				<Node Lib="example_general_nodes" Name="Text" Type="debug Decorator" uid="361995291">
+					<Settings debugState="0" state="1" text="----------- IDLE"/>
+					<Node Name="Idle" Type="Reference" uid="1901653408"/>
+				</Node>
+			</Node>
+		</Node>
+		<Node Lib="example_human_nodes" Name="PostWait" Type="Leaf" uid="2292880747">
+			<Settings/>
+		</Node>
+	</Node>
+	<Node BranchName="BoardToVehicle" Lib="example_general_nodes" Name="Parallel" Type="Composite" uid="139502630">
+		<Settings complete_once="1" fail_once="1"/>
+		<Node Lib="example_human_nodes" Name="ResetBoardingTask" Type="Leaf" uid="3986932218">
+			<Settings/>
+		</Node>
+		<Node Lib="example_general_nodes" Name="Sequence" Type="Composite" uid="3699514431">
+			<Settings/>
+			<Node Lib="example_human_nodes" Name="SetupBoardingTask" Type="Leaf" uid="3530713371">
+				<Settings/>
+			</Node>
+			<Node Name="SetBoardingState" Type="Reference" uid="1971514138"/>
+			<Node Lib="example_general_nodes" Name="Parallel" Type="Composite" uid="2891318029">
+				<Settings complete_once="1" fail_once="1"/>
+				<Node Lib="example_general_nodes" Name="Text" Type="debug Decorator" uid="2994813449">
+					<Settings debugState="0" state="1" text="-------- Calculating Point"/>
+					<Node Lib="example_general_nodes" Name="Repeater" Type="Decorator" uid="2674202545">
+						<Settings count="-1" end_on_complete="0" end_on_fail="1"/>
+						<Node Lib="example_general_nodes" Name="Delay" Type="Decorator" uid="240114559">
+							<Settings autostart="1" delay="2.0" delta="0.0"/>
+							<Node Lib="example_human_nodes" Name="CalculateBoardingPoint" Type="Leaf" uid="1126502237">
+								<Settings flag_name="TargetPointIsSet" maxDist="300.0" timeout="-1.0" write_to="TargetPoint"/>
+							</Node>
+						</Node>
+					</Node>
+				</Node>
+				<Node Lib="example_general_nodes" Name="Switch" Type="Composite" uid="3173573597">
+					<Settings monitor="1"/>
+					<Condition Lib="example_general_nodes" Name="SimpleTranslator" Type="Single" uid="1276434774">
+						<Settings type="bool" variable="TargetPointIsSet"/>
+					</Condition>
+					<Node Lib="example_general_nodes" Name="Text" Type="debug Decorator" uid="3739263582">
+						<Settings debugState="0" state="1" text="-------- Waiting for point"/>
+						<Node Lib="example_general_nodes" Name="Sequence" Type="Composite" uid="4089821189">
+							<Settings/>
+							<Node Lib="example_human_nodes" Name="SimpleWait" Type="Leaf" uid="3284140927">
+								<Settings maxTime="10000000000.0" minTime="10000000000.0">
+									<Flags aiming="0" lying="0" sitting="0" standing="1"/>
+								</Settings>
+							</Node>
+							<Node Creator="Wait" Lib="example_human_nodes" Name="WaitAnimation" Type="Leaf" uid="3843933613">
+								<Settings/>
+							</Node>
+						</Node>
+					</Node>
+					<Node Lib="example_general_nodes" Name="Text" Type="debug Decorator" uid="676915435">
+						<Settings debugState="0" state="1" text="-------- Moving to vehicle"/>
+						<Node Lib="example_human_nodes" Name="LastingMove" Type="Leaf" uid="3647936463">
+							<Settings destination="TargetPoint" movementFlags="MovementFlags" takeWeaponFlag="takeWeapon"/>
+						</Node>
+					</Node>
+				</Node>
+			</Node>
+			<Node Lib="example_human_nodes" Name="Board" Type="Leaf" uid="3335037546">
+				<Settings/>
+			</Node>
+		</Node>
+	</Node>
+	<Node BranchName="testBehavior" Lib="example_general_nodes" Name="Selector" Type="Composite" uid="4203155882">
+		<Settings continue_while_paused="0" continue_while_waiting="0" predict="1"/>
+		<Node Lib="example_general_nodes" Name="Sequence" Type="Composite" uid="3942311543">
+			<Settings/>
+			<Node Lib="example_human_nodes" Name="SetupMoveFlags" Type="Leaf" uid="451359137">
+				<Settings/>
+			</Node>
+			<Node Lib="example_general_nodes" Name="Switch" Type="Composite" uid="3165866192">
+				<Settings monitor="0"/>
+				<Condition Lib="example_human_nodes" Name="RouteBehaviorSwitcher" Type="Single" uid="4167023575">
+					<Settings/>
+				</Condition>
+				<Node Lib="example_general_nodes" Name="Text" Type="debug Decorator" uid="1073842431">
+					<Settings debugState="0" state="1" text="----- ROUTE"/>
+					<Node Name="RouteMove" Type="Reference" uid="2419426510"/>
+				</Node>
+				<Node Lib="example_general_nodes" Name="Text" Type="debug Decorator" uid="1970085256">
+					<Settings debugState="0" state="1" text="----- WAITING TASK"/>
+					<Node Name="Wait" Type="Reference" uid="60726277"/>
+				</Node>
+				<Node Lib="example_general_nodes" Name="Text" Type="debug Decorator" uid="1443631195">
+					<Settings debugState="0" state="1" text="----- BOARDING"/>
+					<Node Name="BoardToVehicle" Type="Reference" uid="355253260"/>
+				</Node>
+			</Node>
+			<Node Name="ResetBoardingState" Type="Reference" uid="4168736311"/>
+		</Node>
+		<Node Lib="example_general_nodes" Name="Text" Type="debug Decorator" uid="4188942556">
+			<Settings debugState="0" state="1" text="-- IDLE"/>
+			<Node Lib="example_general_nodes" Name="Sequence" Type="Composite" uid="888191150">
+				<Settings/>
+				<Node Name="ResetBoardingState" Type="Reference" uid="3032040460"/>
+				<Node Name="Idle" Type="Reference" uid="1867708656"/>
+			</Node>
+		</Node>
+	</Node>
+</BehaviorTree>

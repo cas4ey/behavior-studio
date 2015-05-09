@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='utf-8'?>
+<LibData version="1.2.4">
+  <!-- ====================================================================================================================== -->
+  <library name="example_human_nodes">
+    <!-- ********************************************************************************************************* -->
+    <!-- TASKS -->
+    <node class="Task" type="Leaf" name="Aim">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Перейти в положение для стрельбы"/>
+      <shape name="ring"/>
+      <events/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="Board">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Посадка в транспорт"/>
+      <shape name="ring"/>
+      <events>
+        <outgoing name="EventBoardingEnd"/>
+      </events>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="CalculateBoardingPoint">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Расчитывает целевую точку для посадки \n в заданный заранее транспорт. \n Если задан бесконечный таймаут, то \n задача будет находиться в состоянии \n ожидания, в случае, когда транспорт слишком далеко."/>
+      <shape name="ring"/>
+      <events/>
+      <attribute type="float" name="maxDist" default="300.0" min="10.0" description="Максимальное расстояние до целевого транспорта в метрах."/>
+      <attribute type="string" name="write_to" description="Имя переменной в блэкборде, куда \n следует записывать расчитанные координаты."/>
+      <attribute type="string" name="flag_name" description="Имя переменной в блэкборде, куда следует \n записывать признак того, что точка расчитана."/>
+      <attribute type="float" name="timeout" default="-1.0" description="Таймаут для досрочного завершения задачи \n при длительном ожидании. \n Отрицательное значение означает \n бесконечное ожидание. \n [сек]"/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="LastingMove">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Включает анимацию -двигаться в заданную точку- и \n постоянно корректирует целевую точку включенной анимации, \n читая новые координаты из блэкборда (destination)."/>
+      <shape name="ring"/>
+      <events/>
+      <attribute type="string" name="movementFlags" default="MovementFlags" description="имя переменной в блэкборде, где хранятся текущие флаги движения \n (бегом, пешком, ползком и т.д.)"/>
+      <attribute type="string" name="destination" default="TargetPoint" description="имя переменной в блэкборде, где хранятся координаты цели"/>
+      <attribute type="string" name="takeWeaponFlag" default="takeWeapon" description="имя переменной в блэкборде, где хранится признак \n брать оружие в руки или нет \n (во время перемещения)"/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="LuaScript">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Скриптовый таск"/>
+      <shape name="ring"/>
+      <events/>
+      <attribute type="string" name="description" description="описание работы скрипта"/>
+      <attribute type="string" name="script" description="путь (относительно директории запуска \n приложения) к файлу со скриптом"/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="MoveAnimaiton" creator="Move">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Включает анимацию 'идти в точку' \n и ждет окончания анимации."/>
+      <shape name="ring"/>
+      <events/>
+      <attribute type="string" name="movementFlags" default="MovementFlags" description="имя переменной в блэкборде, где хранятся текущие флаги движения \n (бегом, пешком, ползком и т.д.)"/>
+      <attribute type="string" name="destination" default="TargetPoint" description="имя переменной в блэкборде, где хранятся координаты цели"/>
+      <attribute type="string" name="takeWeaponFlag" default="takeWeapon" description="имя переменной в блэкборде, где хранится признак \n брать оружие в руки или нет \n (во время перемещения)"/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="PostWait">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Сбрасывает тип текущей маршутной точки"/>
+      <shape name="ring"/>
+      <events/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="ResetBoardingTask">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Выполняет сброс данных, записанных в SetupBoardingTask. \n Данную задачу следует выполнять при \n невозможности завершить посадку \n в указанный объект. \n Задача постоянно находится в состоянии WAITING, \n а действия выполняет только внутри метода end \n и при неуспешном завершении родителя."/>
+      <shape name="ring"/>
+      <events>
+        <outgoing name="EventBoardingCancel"/>
+      </events>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="SetNextRoutePoint">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Увеличивает индекс текущей точки маршрута на 1 \n и устанавливает текущий тип действия \n для переключения поведения."/>
+      <shape name="ring"/>
+      <events/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="SetupBoardingTask">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Предварительные действия перед посадкой."/>
+      <shape name="ring"/>
+      <events>
+        <outgoing name="EventBoardingStart"/>
+      </events>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="SetupMoveFlags">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Задает текущие флаги движения по текущей маршрутной точке. \n Результат записывается в переменную 'MovementFlags'."/>
+      <shape name="ring"/>
+      <events/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="SetupRoutePoint">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Установить целевую точку как следующую точку маршрута. \n Записывает координаты в переменную 'TargetPoint'."/>
+      <shape name="ring"/>
+      <events/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="SetupWaitWaypoint">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Задает параметры задачи 'ждать'"/>
+      <shape name="ring"/>
+      <events/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="SimpleWait">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Ждать несколько секунд. \n Записывает время ожидания и флаги анимации в переменную 'waitParams' и сразу завершается. \n Если не заданы флаги анимации, то используются флаги текущей анимации."/>
+      <shape name="ring"/>
+      <events/>
+      <attribute type="bool" name="Flags/standing" description="стоя"/>
+      <attribute type="float" name="minTime" min="0.0" description="минимальное время"/>
+      <attribute type="bool" name="Flags/lying" description="лежа"/>
+      <attribute type="bool" name="Flags/aiming" description="с оружием на изготовку"/>
+      <attribute type="bool" name="Flags/sitting" description="сидя"/>
+      <attribute type="float" name="maxTime" min="0.0" description="максимальное время"/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="WaitAnimation" creator="Wait">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Включает анимацию ожидания и ждет окончания анимации. \n Параметры ожидания читаются из переменной 'waitParams'."/>
+      <shape name="ring"/>
+      <events/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="WaitTask">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Читает данные из переменной 'waitParams' на begin \n и самостоятельно отсчитывает время до конца на update."/>
+      <shape name="ring"/>
+      <events/>
+    </node>
+    <!---->
+    <node class="Task" type="Leaf" name="Wander">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Установить целевую точку \n как случайную точку в заданном радиусе. \n Записывает координаты в 'TargetPoint'. \n Если не заданы флаги передвижения, \n то используются флаги текущей анимации."/>
+      <shape name="ring"/>
+      <events/>
+      <attribute type="float" name="maxRange" min="0.0" description="максимальное расстояние в метрах"/>
+      <attribute type="float" name="minRange" min="0.0" description="минимальное расстояние в метрах"/>
+      <attribute type="bool" name="Flags/run" description="бегом"/>
+      <attribute type="bool" name="Flags/crawl" description="ползком"/>
+      <attribute type="bool" name="Flags/sneak" description="пригнувшись"/>
+      <attribute type="bool" name="Flags/walk" description="пешком"/>
+    </node>
+    <!---->
+    <!-- ********************************************************************************************************* -->
+    <!-- CONDITIONS -->
+    <node class="Condition" type="Single" name="RouteBehaviorSwitcher">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="no"/>
+      <description text="Переключает поведение в зависимости \n от текущего типа маршрутной точки."/>
+      <shape name="diamond"/>
+      <events/>
+    </node>
+    <!---->
+    <!-- ********************************************************************************************************* -->
+  </library>
+  <!-- ====================================================================================================================== -->
+</LibData>

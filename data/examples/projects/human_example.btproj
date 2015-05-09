@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<btproject name="Example of human behavior">
+	<alphabet path="../../../config/behavior_alphabet.xml"/>
+	<shapelib path="../../../config/diagram_shapes.xml"/>
+	<library path="../collections/general_nodes.xml"/>
+	<library path="../collections/human_nodes.xml"/>
+	<behavior_tree path="../behavior_trees/human_behavior_tree.xml"/>
+</btproject>

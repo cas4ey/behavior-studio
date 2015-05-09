@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<alphabet headerTree="BehaviorTree" headerLibrary="LibData" version="1.2.4">
+	<!-- ***************************************************** -->
+	<class name="Task" tag="Node" toplevel="yes" libraryTag="Lib" linkTag="BranchName" allowDebug="yes" allowInvert="no" infoTag="nodeInfo">
+		<default_state name="none"/>
+		<state name="none" value="0" enabled="192 192 224" disabled="120 120 152"/>
+		<state name="running" value="1" enabled="180 230 32" disabled="142 192 0"/>
+		<state name="waiting" value="2" enabled="32 180 80" disabled="16 130 30"/>
+		<state name="completed" value="3" enabled="32 128 244" disabled="0 64 164"/>
+		<state name="failed" value="4" enabled="255 48 48" disabled="224 24 24"/>
+		<state name="aborted" value="5" enabled="255 128 80" disabled="224 128 0"/>
+		<state name="paused" value="6" enabled="132 132 132" disabled="90 90 90"/>
+		<attributes tag="Settings" obligatory="yes"/>
+		<type name="Leaf">
+			<children class="Task" min="0" max="0"/>
+			<children class="Condition" min="0" max="1"/>
+		</type>
+		<type name="Decorator" allowSingleBlock="yes">
+			<children class="Task" min="1" max="1"/>
+			<children class="Condition" min="0" max="1"/>
+		</type>
+		<type name="Composite" allowSingleBlock="yes">
+			<children class="Task" min="1" max="999"/>
+			<children class="Condition" min="0" max="1"/>
+		</type>
+		<type name="Reference" link="1" targetTag="Name" copyTarget="no"/>
+		<type name="Branch" link="1" targetTag="Name" copyTarget="yes"/>
+		<codeGenerator namespace="ai" interface="INode ITask" baseclass="ITask::CTask INode::TreeNode" appendix="ITask::Task INode::Node">
+			<include file="simmodels/behavior/blackboard.h"/>
+			<include file="simmodels/behavior/task.h"/>
+			<include file="simmodels/behavior/node.h"/>
+            <variable interface="ITask" type="NMPTR@[IBlackboard@]" name="m_pBlackboard"/>
+			<method force="yes" interface="ITask" name="@ctor" args="const @class-INode@ref _node, IBlackboard* _blackboard" init="CTask(_node, _blackboard)|m_pBlackboard(_blackboard)"/>
+			<method checked="yes" interface="ITask" name="flush" impl="m_pBlackboard.Release();|CTask::flush();"/>
+			<method checked="yes" interface="ITask" return="bool" name="init" args="ITaskCore* _pCoreTask, TaskState* _pState, IScheduler* _pScheduler" impl="return CTask::init(_pCoreTask, _pState, _pScheduler);"/>
+			<method checked="yes" interface="ITask" name="begin" impl="pState^state = STATE_RUNNING;"/>
+			<method checked="yes" interface="ITask" name="update" impl="pState^state = STATE_COMPLETED;"/>
+			<method checked="no" interface="ITask" name="end"/>
+			<method force="yes" interface="ITask" return="size_t" name="allocatedSize" modifier="const" impl="return sizeof(*this);"/>
+			<method force="yes" interface="INode" name="@ctor"/>
+			<method checked="no" interface="INode" return="bool" name="load" args="IXMLCDHelper2* _xml" impl="return true;"/>
+			<method force="yes" interface="INode" return="ISOUnknown*" name="create" modifier="const" args="IBlackboard* _pBlackboard" impl="return createTask@[@class-ITask, IBlackboard@](*this, _pBlackboard);"/>
+		</codeGenerator>
+	</class>
+	<!-- ***************************************************** -->
+	<class name="Condition" tag="Condition" toplevel="no" libraryTag="Lib" allowDebug="no" allowInvert="yes" infoTag="nodeInfo">
+		<default_state name="default"/>
+		<state name="default" value="0" enabled="255 255 128" disabled="164 164 64"/>
+		<attributes tag="Settings" obligatory="yes"/>
+		<type name="Single">
+			<children class="Condition" min="0" max="0"/>
+		</type>
+		<type name="Decorator">
+			<children class="Condition" min="1" max="1"/>
+		</type>
+		<type name="Composite">
+			<children class="Condition" min="1" max="999"/>
+		</type>
+		<codeGenerator namespace="ai" interface="INode ICondition" baseclass="ICondition::CCondition INode::TreeNode" appendix="ICondition::Condition INode::Node">
+            <include file="simmodels/behavior/blackboard.h"/>
+			<include file="simmodels/behavior/condition.h"/>
+			<include file="simmodels/behavior/node.h"/>
+            <variable interface="ICondition" type="NMPTR@[IBlackboard@]" name="m_pBlackboard"/>
+			<method force="yes" interface="ICondition" name="@ctor" args="const @class-INode@ref _node, IBlackboard* _blackboard" init="CCondition(_node, _blackboard)|m_pBlackboard(_blackboard)"/>
+			<method checked="yes" interface="ICondition" name="flush" impl="m_pBlackboard.Release();|CCondition::flush();"/>
+			<method checked="yes" interface="ICondition" return="bool" name="init" args="IConditionCore* _pCoreCondition, bool _bInverse" impl="return CCondition::init(_pCoreCondition, _bInverse);"/>
+			<method checked="yes" scope="protected" interface="ICondition" return="ConditionResult" name="checkCondition" impl="return CONDITION_FALSE;"/>
+			<method force="yes" interface="ICondition" return="size_t" name="allocatedSize" modifier="const" impl="return sizeof(*this);"/>
+			<method force="yes" interface="INode" name="@ctor"/>
+			<method checked="no" interface="INode" return="bool" name="load" args="IXMLCDHelper2* _xml" impl="return true;"/>
+			<method force="yes" interface="INode" return="ISOUnknown*" name="create" modifier="const" args="IBlackboard* _pBlackboard" impl="return createTask@[@class-ICondition, IBlackboard@](*this, _pBlackboard);"/>
+		</codeGenerator>
+	</class>
+	<!-- ***************************************************** -->
+</alphabet>

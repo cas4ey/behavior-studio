@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ShapeData path="../data/signs">
+	<!-- ********************************************************************************** -->
+	<VecShape Name="square" Sign="square.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="diamond" Sign="diamond.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+    <!-- ********************************************************************************** -->
+	<VecShape Name="diamond_eq" Sign="diamond_eq.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="diamond_arrow" Sign="diamond_arrow.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="diamond_less" Sign="diamond_less.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="diamond_less_eq" Sign="diamond_less_eq.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="diamond_greater" Sign="diamond_greater.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="diamond_greater_eq" Sign="diamond_greater_eq.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="ring" Sign="ring.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="triangle2" Sign="triangle1.pp"  Scale="0.75">
+		<ConnectorPoints hor_x="-8" hor_y="3" vert_x="0" vert_y="-8"/>
+		<ConnectorPoints hor_x="8" hor_y="3" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="triangle" Sign="triangle2.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-8" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="8" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="triangle_small" Sign="triangle2.pp" Scale="0.65">
+		<ConnectorPoints hor_x="-8" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="8" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="selector" Sign="selector.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="sequence" Sign="sequence.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="parallel" Sign="parallel.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+	<VecShape Name="switch" Sign="switch.pp" Scale="0.75">
+		<ConnectorPoints hor_x="-16" hor_y="0" vert_x="0" vert_y="-16"/>
+		<ConnectorPoints hor_x="16" hor_y="0" vert_x="0" vert_y="16"/>
+	</VecShape>
+	<!-- ********************************************************************************** -->
+</ShapeData>

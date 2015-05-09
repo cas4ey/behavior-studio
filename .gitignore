@@ -1,0 +1,4 @@
+*.pyc
+.idea
+generated_files
+__pycache__
