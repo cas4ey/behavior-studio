@@ -146,7 +146,7 @@ backgrounds = [
 ''' Current background image index for graphics scene.
 
 If < 0 or > len(backgrounds)-1 then no background will be displayed. '''
-background = 1
+background = 3
 
 ########################################################################################################################
 
