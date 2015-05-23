@@ -145,6 +145,14 @@
       <attribute type="bool" name="fail" description="Если = True, то каждый раз, когда завершается \n дочерняя задача, этот декоратор будет \n завершаться со статусом FAILED. \n Иначе - этот декоратор всегда завершается \n со статусом COMPLETED."/>
     </node>
     <!---->
+    <node class="Task" type="Decorator" name="Inverter">
+      <children class="Task" use="yes"/>
+      <children class="Condition" use="no"/>
+      <description text="Инвертирует статус завершения дочерней задачи."/>
+      <shape name="triangle"/>
+      <events/>
+    </node>
+    <!---->
     <node class="Task" type="Decorator" name="Text" debugDefault="yes">
       <children class="Task" use="yes"/>
       <children class="Condition" use="no"/>
@@ -437,6 +445,14 @@
       <children class="Condition" use="no"/>
       <description text="При проверке всегда возвращает 1."/>
       <shape name="diamond"/>
+      <events/>
+    </node>
+    <!---->
+    <node class="Condition" type="Decorator" name="Not">
+      <children class="Task" use="no"/>
+      <children class="Condition" use="yes"/>
+      <description text="Инвертирует результат проверки дочернего условия."/>
+      <shape name="triangle_small"/>
       <events/>
     </node>
     <!---->
