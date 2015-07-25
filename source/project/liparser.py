@@ -676,7 +676,7 @@ class LibParser(object):
         dynamicArrayAttributes = []
 
         # use sorted by name attributes - this prevents from libs difference on every application launch
-        for a in sorted(attributes):
+        for a in sorted(attributes.keys()):
             attribute = attributes[a]
             if not attribute.isDynamic():
                 if not attribute.isArray():
@@ -758,7 +758,7 @@ class LibParser(object):
         attr.set('depend_on', attribute.controlAttribute)
         attr.set('description', attribute.description.replace('\n', ' \\n '))
 
-        keysByUnit = dict()
+        keysByUnit = {}
         units = attribute.units()
         for key in units:
             if not key:
@@ -774,7 +774,7 @@ class LibParser(object):
             keysByUnit[unit].sort()
 
         # save units in alphabetical order too - this prevents from libs difference on every application launch
-        for unit in sorted(keysByUnit):
+        for unit in sorted(keysByUnit.keys()):
             u = etree.SubElement(attr, 'unit')
             keys = ';'.join(keysByUnit[unit])
             u.set('keys', keys)

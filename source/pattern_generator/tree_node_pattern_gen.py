@@ -40,6 +40,7 @@ __email__ = 'victor.zarubkin@gmail.com'
 
 import os
 import re
+from compat_2to3 import isPython2
 from datetime import datetime
 from language import trStr
 
@@ -142,13 +143,16 @@ class TreeNodePatternGenerator(object):
         f = open('./generated_files/{0}'.format(fname), 'w')
 
         # header
-        f.write(header.encode('utf8'))
+        if isPython2:
+            f.write(header.encode('utf8'))
+        else:
+            f.write(header)
 
         # ifndef/define macro
-        defineMacro = '__'
+        defineMacro = ''
         for n in nameparts:
             defineMacro += n.upper() + '_'
-        defineMacro += '__H__'
+        defineMacro += '___H__'
 
         # ifndef/define zone
         f.write('#ifndef {0}\n#define {0}\n\n'.format(defineMacro))
@@ -161,7 +165,7 @@ class TreeNodePatternGenerator(object):
 
         # namespace
         if codegenData.namespace:
-            f.write('namespace {0}\n'.format(codegenData.namespace) + '{\n' + self.__codeLocalSeparator)
+            f.write('namespace {0} '.format(codegenData.namespace) + '{\n' + self.__codeLocalSeparator)
 
         # forward declarations
         for i in classnames:
@@ -209,7 +213,7 @@ class TreeNodePatternGenerator(object):
                                 symbolPrefix = ': '
                                 for s in initStrings:
                                     s = s.strip()
-                                    if len(s) > 0:
+                                    if s:
                                         f.write('\n' + tab + tab + symbolPrefix + s)
                                         symbolPrefix = ', '
                             elif i in codegenData.baseClasses:
@@ -255,6 +259,8 @@ class TreeNodePatternGenerator(object):
                             args = args.replace('@class-{0}'.format(j), classnames[j])
                     # declaration
                     f.write('\n' + tab + m.declarationHpp(args))
+                    if m.overrideModifier:
+                        f.write(' ' + m.overrideModifier)
                     # implementation
                     if onlyDeclarations:
                         f.write(';\n')
@@ -309,7 +315,10 @@ class TreeNodePatternGenerator(object):
         f = open('./generated_files/{0}'.format(fname), 'w')
 
         # header
-        f.write(header.encode('utf8'))
+        if isPython2:
+            f.write(header.encode('utf8'))
+        else:
+            f.write(header)
 
         # includes
         f.write('#include \"{0}.h\"\n'.format(filename))

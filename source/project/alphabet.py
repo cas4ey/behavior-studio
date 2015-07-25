@@ -169,6 +169,7 @@ class CodeGeneratorMethod(object):
         self.modifier = modifier
         self.interface = iface
         self.args = args
+        self.overrideModifier = ''
         self.implementation = impl
         self.initSection = initSection
         self.index = int(-1)
@@ -204,10 +205,10 @@ class CodeGeneratorData(object):
         self.namespace = ''
         self.includes = []
         self.interfaces = []
-        self.baseClasses = dict()
-        self.appendix = dict()
-        self.methods = dict()
-        self.variables = dict()
+        self.baseClasses = {}
+        self.appendix = {}
+        self.methods = {}
+        self.variables = {}
 
 #######################################################################################################################
 
@@ -749,6 +750,11 @@ class Alphabet(object):
             else:
                 modifier = ''
 
+            if m.hasAttribute('override_modifier'):
+                override_modifier = m.getAttribute('override_modifier')
+            else:
+                override_modifier = ''
+
             if m.hasAttribute('args'):
                 args = m.getAttribute('args')
                 if args:
@@ -803,6 +809,7 @@ class Alphabet(object):
                 checked = True
 
             method = CodeGeneratorMethod(checked, force, ret, iface, mname, modifier, args, impl, initSection)
+            method.overrideModifier = override_modifier
             method.index = int(len(codegenData.methods[iface][scope]))
             codegenData.methods[iface][scope].append(method)
 

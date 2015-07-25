@@ -30,20 +30,20 @@
 			<include file="simmodels/behavior/task.h"/>
 			<include file="simmodels/behavior/node.h"/>
             <variable interface="ITask" type="NMPTR@[IBlackboard@]" name="m_pBlackboard"/>
-			<method force="yes" interface="ITask" name="@ctor" args="const @class-INode@ref _node, IBlackboard* _blackboard" init="CTask(_node, _blackboard)|m_pBlackboard(_blackboard)"/>
-			<method checked="yes" interface="ITask" name="flush" impl="m_pBlackboard.Release();|CTask::flush();"/>
-			<method checked="yes" interface="ITask" return="bool" name="init" args="ITaskCore* _pCoreTask, TaskState* _pState, IScheduler* _pScheduler" impl="return CTask::init(_pCoreTask, _pState, _pScheduler);"/>
-			<method checked="yes" interface="ITask" name="begin" impl="pState^state = STATE_RUNNING;"/>
-			<method checked="yes" interface="ITask" name="update" impl="pState^state = STATE_COMPLETED;"/>
-			<method checked="no" interface="ITask" name="end"/>
-			<method force="yes" interface="ITask" return="size_t" name="allocatedSize" modifier="const" impl="return sizeof(*this);"/>
-			<method force="yes" interface="INode" name="@ctor"/>
-			<method checked="no" interface="INode" return="bool" name="load" args="IXMLCDHelper2* _xml" impl="return true;"/>
-			<method force="yes" interface="INode" return="ISOUnknown*" name="create" modifier="const" args="IBlackboard* _pBlackboard" impl="return createTask@[@class-ITask, IBlackboard@](*this, _pBlackboard);"/>
+			<method force="yes" scope="public" interface="ITask" name="@ctor" args="const @class-INode@ref _node, IBlackboard* _blackboard" init="CTask(_node, _blackboard)|m_pBlackboard(_blackboard)"/>
+			<method checked="yes" scope="public" interface="ITask" name="flush" impl="m_pBlackboard.Release();|CTask::flush();" override_modifier="override"/>
+			<method checked="yes" scope="public" interface="ITask" return="bool" name="init" args="ITaskCore* _pCoreTask, TaskState* _pState, IScheduler* _pScheduler" impl="return CTask::init(_pCoreTask, _pState, _pScheduler);" override_modifier="override"/>
+			<method checked="yes" scope="public" interface="ITask" name="begin" impl="pState^state = STATE_RUNNING;" override_modifier="override"/>
+			<method checked="yes" scope="public" interface="ITask" name="update" impl="pState^state = STATE_COMPLETED;" override_modifier="override"/>
+			<method checked="no" scope="public" interface="ITask" name="end" override_modifier="override"/>
+			<method force="yes" scope="public" interface="ITask" return="size_t" name="allocatedSize" modifier="const" impl="return sizeof(*this);"/>
+			<method force="yes" scope="public" interface="INode" name="@ctor"/>
+			<method checked="no" scope="public" interface="INode" return="bool" name="load" args="IXMLCDHelper2* _xml" impl="return true;" override_modifier="override"/>
+			<method force="yes" scope="public" interface="INode" return="ISOUnknown*" name="create" modifier="const" args="IBlackboard* _pBlackboard" impl="return createTask@[@class-ITask, IBlackboard@](*this, _pBlackboard);" override_modifier="override"/>
 		</codeGenerator>
 	</class>
 	<!-- ***************************************************** -->
-	<class name="Condition" tag="Condition" toplevel="no" libraryTag="Lib" allowDebug="no" allowInvert="yes" infoTag="nodeInfo">
+	<class name="Condition" tag="Condition" toplevel="no" libraryTag="Lib" allowDebug="no" allowInvert="no" infoTag="nodeInfo">
 		<default_state name="default"/>
 		<state name="default" value="0" enabled="255 255 128" disabled="164 164 64"/>
 		<attributes tag="Settings" obligatory="yes"/>
@@ -61,14 +61,14 @@
 			<include file="simmodels/behavior/condition.h"/>
 			<include file="simmodels/behavior/node.h"/>
             <variable interface="ICondition" type="NMPTR@[IBlackboard@]" name="m_pBlackboard"/>
-			<method force="yes" interface="ICondition" name="@ctor" args="const @class-INode@ref _node, IBlackboard* _blackboard" init="CCondition(_node, _blackboard)|m_pBlackboard(_blackboard)"/>
-			<method checked="yes" interface="ICondition" name="flush" impl="m_pBlackboard.Release();|CCondition::flush();"/>
-			<method checked="yes" interface="ICondition" return="bool" name="init" args="IConditionCore* _pCoreCondition, bool _bInverse" impl="return CCondition::init(_pCoreCondition, _bInverse);"/>
-			<method checked="yes" scope="protected" interface="ICondition" return="ConditionResult" name="checkCondition" impl="return CONDITION_FALSE;"/>
-			<method force="yes" interface="ICondition" return="size_t" name="allocatedSize" modifier="const" impl="return sizeof(*this);"/>
-			<method force="yes" interface="INode" name="@ctor"/>
-			<method checked="no" interface="INode" return="bool" name="load" args="IXMLCDHelper2* _xml" impl="return true;"/>
-			<method force="yes" interface="INode" return="ISOUnknown*" name="create" modifier="const" args="IBlackboard* _pBlackboard" impl="return createTask@[@class-ICondition, IBlackboard@](*this, _pBlackboard);"/>
+			<method force="yes" scope="public" interface="ICondition" name="@ctor" args="const @class-INode@ref _node, IBlackboard* _blackboard" init="CCondition(_node, _blackboard)|m_pBlackboard(_blackboard)"/>
+			<method checked="yes" scope="public" interface="ICondition" name="flush" impl="m_pBlackboard.Release();|CCondition::flush();" override_modifier="override"/>
+			<method checked="yes" scope="public" interface="ICondition" return="bool" name="init" args="IConditionCore* _pCoreCondition" impl="return CCondition::init(_pCoreCondition);" override_modifier="override"/>
+			<method force="yes" scope="public" interface="ICondition" return="ConditionResult" name="check" impl="return CONDITION_FALSE;" override_modifier="override"/>
+			<method force="yes" scope="public" interface="ICondition" return="size_t" name="allocatedSize" modifier="const" impl="return sizeof(*this);"/>
+			<method force="yes" scope="public" interface="INode" name="@ctor"/>
+			<method checked="no" scope="public" interface="INode" return="bool" name="load" args="IXMLCDHelper2* _xml" impl="return true;" override_modifier="override"/>
+			<method force="yes" scope="public" interface="INode" return="ISOUnknown*" name="create" modifier="const" args="IBlackboard* _pBlackboard" impl="return createTask@[@class-ICondition, IBlackboard@](*this, _pBlackboard);" override_modifier="override"/>
 		</codeGenerator>
 	</class>
 	<!-- ***************************************************** -->
