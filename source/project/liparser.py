@@ -776,12 +776,13 @@ class LibParser(object):
         # sort keys alphabetically - this prevents from libs difference on every application launch
         for unit in keysByUnit:
             keysByUnit[unit].sort()
+            keysByUnit[unit] = ';'.join(keysByUnit[unit])
 
         # save units in alphabetical order too - this prevents from libs difference on every application launch
-        sorted_attributes = sorted(keysByUnit.keys(), key=lambda x: x.typeName())
+        sorted_attributes = sorted(keysByUnit.keys(), key=lambda x: '{0}/{1}'.format(x.typeName(), keysByUnit[x]))
         for unit_attribute in sorted_attributes:
             u = etree.SubElement(attr, 'unit')
-            keys = ';'.join(keysByUnit[unit_attribute])
+            keys = keysByUnit[unit_attribute]
             u.set('keys', keys)
             self.__saveAttributeData(u, unit_attribute)
 
