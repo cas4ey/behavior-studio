@@ -91,6 +91,7 @@ class TreeGraphicsScene(QGraphicsScene):
         self.parentView = parent
 
         self.updateCounter = int(0)
+        self.__removedItems = []
         self.polyItems = []
         self.polyItemsByUid = dict()
         if displayMode:
@@ -149,6 +150,10 @@ class TreeGraphicsScene(QGraphicsScene):
         self.underCursorWidgetScale = 1.0
         self.scalingTimer = QTimer()
         self.scalingTimer.timeout.connect(self.rescaleUnderCursorWidget)
+
+        self.__removerTimer = QTimer()
+        self.__removerTimer.setSingleShot(True)
+        self.__removerTimer.timeout.connect(self.__onRemoveItemsTimeout)
 
         self.mousePos = QPointF()
 
@@ -231,6 +236,13 @@ class TreeGraphicsScene(QGraphicsScene):
             shift = QPointF(150.0, 0.0)
         self.parentView.centerOn(self.rootItem.posRequired() + shift)
 
+    @QtCore.Slot()
+    def __onRemoveItemsTimeout(self):
+        if self.__removedItems:
+            QGraphicsScene.removeItem(self, self.__removedItems.pop())
+            if self.__removedItems:
+                self.__removerTimer.start(40)
+
     def scheduleUpdate(self):
         if not self.__updateTimer.isActive():
             self.__updateTimer.start(10)
@@ -249,6 +261,10 @@ class TreeGraphicsScene(QGraphicsScene):
         if self.rootItem is not None:
             self.rootItem.removeFromScene()
             self.rootItem = None
+        # if self.__removedItems:
+        #     for item in self.__removedItems:
+        #         QGraphicsScene.removeItem(self, item)
+        self.__removedItems = []
         self.rootNode = None
         self.selected = None
         self.widestItem = None
@@ -285,6 +301,7 @@ class TreeGraphicsScene(QGraphicsScene):
     def setFocused(self, f):
         self.__focused = bool(f)
 
+    @QtCore.Slot()
     def rescaleUnderCursorWidget(self):
         if self.underCursorWidget is not None and self.underCursorWidgetScale < 100.0:
             self.underCursorWidgetScale = min(100.0, self.underCursorWidgetScale + TreeGraphicsScene.scalingStep)
@@ -968,8 +985,8 @@ class TreeGraphicsScene(QGraphicsScene):
     def removeItem(self, item):
         isPolyItem = item in self.polyItems
         if isPolyItem:
-            if item.textItem is not None:
-                QGraphicsScene.removeItem(self, item.textItem)
+            # if item.textItem is not None:
+            #     QGraphicsScene.removeItem(self, item.textItem)
 
             if item == self.selected:
                 if self.dragItem is not None:
@@ -1015,7 +1032,10 @@ class TreeGraphicsScene(QGraphicsScene):
         else:
             verify = False
 
-        QGraphicsScene.removeItem(self, item)
+        # QGraphicsScene.removeItem(self, item)
+        item.setVisible(False)
+        self.__removedItems.append(item)
+        # self.__removerTimer.start(40)
 
         if verify and self.justifyItems and not self.verifying:
             self.rootItem.recalcBoundaries(True)

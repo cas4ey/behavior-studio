@@ -1675,7 +1675,8 @@ class TreeNode(object):
                     globals.project.trees.addDisconnectedNodes(treeName, child.uid())
                 elif self.Project is not None:
                     globals.project.trees.removeDisconnectedNodes(None, child.uid())
-                    self.Project.nodes.remove(self)
+                    # self.Project.nodes.remove(self) # !!!!!!!!!!!!!!!!!!!!
+                    self.Project.nodes.remove(child)
                 if not silent:
                     globals.project.modified = True
                     globals.behaviorTreeSignals.nodeDisconnected.emit(Uid(child.uid()), Uid(self.uid()))

@@ -23,6 +23,8 @@
 #           : A copy of the GNU General Public License can be found in file COPYING.
 ############################################################################
 
+from __future__ import unicode_literals
+
 __author__ = 'Victor Zarubkin'
 __copyright__ = 'Copyright (C) 2012  Victor Zarubkin'
 __credits__ = ['Victor Zarubkin']
@@ -42,18 +44,18 @@ from .colors import DiagramColor
 
 
 class TextItem(QGraphicsTextItem):
-    def __init__(self, invert_flag, text, ref=u'', parent=None, scene=None):
+    def __init__(self, invert_flag, text, ref='', parent=None, scene=None):
         self.__invert_flag = invert_flag
 
-        fulltext = u''
+        fulltext = ''
         if invert_flag:
-            fulltext += u'Not '
+            fulltext += 'Not '
 
         if ref:
-            fulltext += u'\"{0}\" '.format(unicode(ref))
+            fulltext += '\"{0}\" '.format(unicode(ref))
 
         if text is None:
-            text = u''
+            text = ''
         self.noTextChange = (len(text) < 1)
         self.__displayText = text
         fulltext += text
@@ -106,18 +108,18 @@ class TextItem(QGraphicsTextItem):
         painter.setFont(self.font())
         painter.drawText(self.boundingRect(), self.text(), QTextOption(self.alignment))
 
-    def setText(self, invert_flag, text, ref=u'', internal=False):
+    def setText(self, invert_flag, text, ref='', internal=False):
         self.__invert_flag = invert_flag
 
-        fulltext = u''
+        fulltext = ''
         if invert_flag:
-            fulltext += u'Not '
+            fulltext += 'Not '
 
         if ref:
-            fulltext += u'\"{0}\" '.format(unicode(ref))
+            fulltext += '\"{0}\" '.format(unicode(ref))
 
         if text is None:
-            text = u''
+            text = ''
 
         if not internal:
             self.noTextChange = (text is None or len(text) < 1)

@@ -335,7 +335,7 @@ class PolyItem(QGraphicsPolygonItem, QObject):
         self.__isDraggable = drag
 
     def isRoot(self):
-        return self.__rootIndicator is not None
+        return self.__rootIndicator is not None and self.__rootIndicator.displayText()
 
     def dragToAnotherPos(self, drag):
         if drag != self.draggingPos:
@@ -732,9 +732,9 @@ class PolyItem(QGraphicsPolygonItem, QObject):
             prev_index = i - 1
 
         # Swap graphics items:
-        prevItem = self.children[prev_index]
-        self.children[prev_index] = child
-        self.children[child_index] = prevItem
+        self.children[prev_index], self.children[child_index] = self.children[child_index], self.children[prev_index]
+        prevItem = self.children[child_index]
+        child = self.children[prev_index]
 
         # Swap TreeNode items:
         if self.node is not None and prevItem.node is not None and child.node is not None \
@@ -786,9 +786,9 @@ class PolyItem(QGraphicsPolygonItem, QObject):
             next_index = i + 1
 
         # Swap graphics items:
-        nextItem = self.children[next_index]
-        self.children[next_index] = child
-        self.children[child_index] = nextItem
+        self.children[next_index], self.children[child_index] = self.children[child_index], self.children[next_index]
+        nextItem = self.children[child_index]
+        child = self.children[next_index]
 
         # Swap TreeNode items:
         if self.node is not None and nextItem.node is not None and child.node is not None \
@@ -823,20 +823,27 @@ class PolyItem(QGraphicsPolygonItem, QObject):
         if rootFlag:
             if self.isRoot():
                 return
-            self.__rootIndicator = TextItem(False, u'Root', u'', self)
-            self.__rootIndicator.setDefaultTextColor(DiagramColor.rootColor)
-            # self.scene().addItem(self.__rootIndicator)
-            self.updatePos()
+            if self.__rootIndicator is None:
+                self.__rootIndicator = TextItem(False, 'Root', '', self)
+                self.__rootIndicator.setDefaultTextColor(DiagramColor.rootColor)
+                self.updatePos()
+            else:
+                self.__rootIndicator.setText(False, 'Root')
+                self.__rootIndicator.show()
         else:
             if not self.isRoot():
                 return
-            self.__removeChildItem(self.__rootIndicator)
-            self.__rootIndicator = None
+            # self.__removeChildItem(self.__rootIndicator)
+            # self.__rootIndicator.setParentItem(None)
+            # self.scene().removeItem(self.__rootIndicator)
+            # self.__rootIndicator = None
+            self.__rootIndicator.setText(False, '')
+            self.__rootIndicator.hide()
 
     def setText(self, text, ref=u''):
-        if text is not None and self.textItem is not None:
-            self.__removeChildItem(self.textItem)
-            self.textItem = None
+        # if text is not None and self.textItem is not None:
+        #     self.__removeChildItem(self.textItem)
+        #     self.textItem = None
 
         invert_flag = False  # condition inversion flag
         if self.node is not None:
@@ -849,8 +856,6 @@ class PolyItem(QGraphicsPolygonItem, QObject):
                 self.textItem = NodeTextItem(invert_flag, text, ref, self)
             else:
                 self.textItem.setText(invert_flag, text, ref)
-
-            # self.scene().addItem(self.textItem)
 
             textRect = self.textItem.boundingRect()
             self.textW = textRect.width()
@@ -875,21 +880,26 @@ class PolyItem(QGraphicsPolygonItem, QObject):
 
         if i < 0:
             if self.indexTextItem is not None:
-                self.indexTextItem.setParentItem(None)
-                self.scene().removeItem(self.indexTextItem)
-                self.indexTextItem = None
+                # self.indexTextItem.setParentItem(None)
+                # self.scene().removeItem(self.indexTextItem)
+                # self.indexTextItem = None
+                self.indexTextItem.setText(invert_flag=False, text='', internal=True)
+                self.indexTextItem.hide()
         else:
             if self.indexTextItem is not None:
                 if self.indexTextItem.displayText() != str(i):
-                    self.indexTextItem.setParentItem(None)
-                    self.scene().removeItem(self.indexTextItem)
-                    self.indexTextItem = None
-            if self.indexTextItem is None:
+                    # self.indexTextItem.setParentItem(None)
+                    # self.scene().removeItem(self.indexTextItem)
+                    # self.indexTextItem = None
+                    self.indexTextItem.setText(invert_flag=False, text=str(i), internal=True)
+                    if self.isVisible() and not self.indexTextItem.isVisible():
+                        self.indexTextItem.show()
+            # if self.indexTextItem is None:
+            else:
                 self.indexTextItem = NodeTextItem(False, unicode(str(i)), u'', self)
                 self.indexTextItem.setSize(5)
                 if self.textItem is not None:
                     self.indexTextItem.setDefaultTextColor(self.textItem.defaultTextColor())
-                # self.scene().addItem(self.indexTextItem)
                 self.updatePos()
 
     def recalcBoundaries(self, deep=False):
@@ -1436,9 +1446,13 @@ class PolyItem(QGraphicsPolygonItem, QObject):
                 self.__eventIndicator.setDefaultTextColor(DiagramColor.eventsColor)
             else:
                 self.__eventIndicator.setText(False, text)
+                if self.isVisible() and not self.__eventIndicator.isVisible():
+                    self.__eventIndicator.show()
         elif self.__eventIndicator is not None:
-            self.__removeChildItem(self.__eventIndicator)
-            self.__eventIndicator = None
+            self.__eventIndicator.setText(False, '')
+            self.__eventIndicator.hide()
+            # self.__removeChildItem(self.__eventIndicator)
+            # self.__eventIndicator = None
 
     def verify(self, full, deep=True):
         if self.node is not None and self.node.nodeDesc() is not None:
@@ -1671,21 +1685,21 @@ class PolyItem(QGraphicsPolygonItem, QObject):
         forRemove = []
         for child in self.children:
             forRemove.append(child)
+        self.children = []
         for loser in forRemove:
             loser.removeFromScene(full, False)
-        del self.children[:]
-        if self.textItem is not None:
-            self.__removeChildItem(self.textItem)
-            self.textItem = None
-        if self.__debugIndicator is not None:
-            self.__removeChildItem(self.__debugIndicator)
-            self.__debugIndicator = None
-        if self.__eventIndicator is not None:
-            self.__removeChildItem(self.__eventIndicator)
-            self.__eventIndicator = None
-        if self.indexTextItem is not None:
-            self.__removeChildItem(self.indexTextItem)
-            self.indexTextItem = None
+        # if self.textItem is not None:
+        #     self.__removeChildItem(self.textItem)
+        #     self.textItem = None
+        # if self.__debugIndicator is not None:
+        #     self.__removeChildItem(self.__debugIndicator)
+        #     self.__debugIndicator = None
+        # if self.__eventIndicator is not None:
+        #     self.__removeChildItem(self.__eventIndicator)
+        #     self.__eventIndicator = None
+        # if self.indexTextItem is not None:
+        #     self.__removeChildItem(self.indexTextItem)
+        #     self.indexTextItem = None
         if self.__parent is not None:
             self.__parent.removeChild(self, full, firstCall)
         elif self.node is not None and self.node.parent() is not None and firstCall:
