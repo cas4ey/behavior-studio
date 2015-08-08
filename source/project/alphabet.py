@@ -45,6 +45,7 @@ from PySide.QtCore import Qt
 from PySide.QtGui import QColor
 
 from auxtypes import processString
+from compat_2to3 import dict_items
 
 import globals
 
@@ -396,17 +397,15 @@ class Alphabet(object):
         return self.classes.__iter__()
 
     def getClass(self, classname):
-        if classname in self.classes:
-            return self.classes[classname]
-        return None
+        return self.classes.get(classname, None)
 
     def getClasses(self, top=None):
         if top is None:
-            return self.classes
-        classes = dict()
+            return dict_items(self.classes.keys())
+        classes = []
         for c in self.classes:
             if self.classes[c].top == top:
-                classes[c] = self.classes[c]
+                classes.append(c)
         return classes
 
     def numClasses(self, top=None):

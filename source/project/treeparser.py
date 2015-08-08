@@ -197,7 +197,7 @@ class TreeParser(object):
         xmlNodes = dict()
         topClasses = project.alphabet.getClasses(True)
         for t in topClasses:
-            cls = topClasses[t]
+            cls = project.alphabet.getClass(t)
             xml_nodes = mainNode.getElementsByTagName(cls.tag)
             if xml_nodes and cls.tag not in xmlNodes:
                 if mainDiagramNode is not None:
@@ -537,9 +537,12 @@ class TreeParser(object):
         # save nodes information
         for infotag in projectAlphabet.infos:
             nodes = projectTrees.getUsedNodes(projectNodes, filename, True, infotag)
+            nodes.sort(key=lambda x: x.name)
             for n in nodes:
+                if not n.incomingEvents and not n.outgoingEvents:
+                    continue
                 nodeCls = projectAlphabet[n.nodeClass]
-                if nodeCls is None or (not n.incomingEvents and not n.outgoingEvents):
+                if nodeCls is None:
                     continue
                 info = doc.createElement(infotag)
                 main.appendChild(info)
@@ -578,14 +581,14 @@ class TreeParser(object):
             num += 1
 
         # saving xml document to file
-        tree_file = open(filename, 'w')
+        tree_file = open(filename, 'wb')
         tree_file.write(doc.toprettyxml('\t', '\n', 'utf-8'))
         tree_file.close()
 
         # saving diagram xml document
         fname, _ = os.path.splitext(filename)
         diagram_filename = fname + '.dgm'
-        diagram_file = open(diagram_filename, 'w')
+        diagram_file = open(diagram_filename, 'wb')
         diagram_file.write(diagramDoc.toprettyxml('\t', '\n', 'utf-8'))
         diagram_file.close()
 
@@ -670,8 +673,20 @@ class TreeParser(object):
             creatorName = ''
             if treeNode.isInverse():
                 creatorName += '!'
-            creatorName += desc.creator
+            creator_name = desc.creator
+            creator_lib = ''
+            for symbol in ('/', '|'):
+                if symbol in desc.creator:
+                    creator_parts = desc.creator.split(symbol)
+                    creator_lib = creator_parts[0]
+                    creator_name = creator_parts[-1]
+                    if creator_lib == creator_name:
+                        creator_lib = ''
+                    break
+            creatorName += creator_name
             curr.setAttribute('Creator', creatorName)
+            if creator_lib:
+                curr.setAttribute('CreatorLib', creator_lib)
 
         # save library
         curr.setAttribute(nodeCls.lib, treeNode.libname)

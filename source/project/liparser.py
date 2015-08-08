@@ -582,13 +582,13 @@ class LibParser(object):
                     '============================================================ '
 
         if libs:
-            for lib in libs:
+            for lib in sorted(libs, key=lambda x: x.name()):
                 root.append(etree.Comment(separator))
                 self.__saveLibrary(root, lib)
             root.append(etree.Comment(separator))
 
         # saving xml document to file
-        f = open(filePath, 'w')
+        f = open(filePath, 'wb')
         f.write(etree.tostring(root, encoding='utf-8', pretty_print=True, xml_declaration=True, with_comments=True))
         # f.write(doc.toprettyxml('\t', '\n', 'utf-8'))
         f.close()
@@ -603,16 +603,18 @@ class LibParser(object):
                     '******************************************************** '
 
         count = 0
-        all_classes = self.__alphabet.getClasses()
-        for cls in all_classes:
-            nodes = library.getAll(cls)
-            if nodes:
-                count += 1
-                lib.append(etree.Comment(separator))
-                lib.append(etree.Comment(' {0}S '.format(cls.upper())))
-                for n in sorted(nodes.keys()):
-                    self.__saveNode(lib, nodes[n])
-                    lib.append(etree.Comment(''))
+        # saving "top" classes first (those who can be used as top nodes in behavior tree)
+        for isTop in (True, False):
+            all_classes = self.__alphabet.getClasses(top=isTop)
+            for cls in sorted(all_classes):
+                nodes = library.getAll(cls)
+                if nodes:
+                    count += 1
+                    lib.append(etree.Comment(separator))
+                    lib.append(etree.Comment(' {0}S '.format(cls.upper())))
+                    for n in sorted(nodes.keys()):
+                        self.__saveNode(lib, nodes[n])
+                        lib.append(etree.Comment(''))
 
         if count > 0:
             lib.append(etree.Comment(separator))
@@ -631,14 +633,16 @@ class LibParser(object):
             node.set('debugDefault', 'yes')
 
         # save 'children' tag
-        all_classes = self.__alphabet.getClasses()
-        for cls in all_classes:
-            child = etree.SubElement(node, 'children')
-            child.set('class', cls)
-            if cls in treeNode.childClasses:
-                child.set('use', 'yes')
-            else:
-                child.set('use', 'no')
+        # saving "top" classes first (those who can be used as top nodes in behavior tree)
+        for isTop in (True, False):
+            all_classes = self.__alphabet.getClasses(top=isTop)
+            for cls in sorted(all_classes):
+                child = etree.SubElement(node, 'children')
+                child.set('class', cls)
+                if cls in treeNode.childClasses:
+                    child.set('use', 'yes')
+                else:
+                    child.set('use', 'no')
 
         # save 'description' tag
         description = etree.SubElement(node, 'description')
@@ -774,11 +778,12 @@ class LibParser(object):
             keysByUnit[unit].sort()
 
         # save units in alphabetical order too - this prevents from libs difference on every application launch
-        for unit in sorted(keysByUnit.keys()):
+        sorted_attributes = sorted(keysByUnit.keys(), key=lambda x: x.typeName())
+        for unit_attribute in sorted_attributes:
             u = etree.SubElement(attr, 'unit')
-            keys = ';'.join(keysByUnit[unit])
+            keys = ';'.join(keysByUnit[unit_attribute])
             u.set('keys', keys)
-            self.__saveAttributeData(u, unit)
+            self.__saveAttributeData(u, unit_attribute)
 
 #######################################################################################################################
 #######################################################################################################################

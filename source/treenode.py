@@ -1062,7 +1062,7 @@ class DynamicAttrDesc(object):
         if self.__defaultKey not in self.__attributes:
             self.__defaultKey = ''
             if '' not in self.__attributes:
-                if python_version < (3, 0):
+                if isPython2:
                     self.__attributes[''] = self.__attributes.itervalues().next()
                 else:
                     self.__attributes[''] = next(iter(list(self.__attributes.values())))

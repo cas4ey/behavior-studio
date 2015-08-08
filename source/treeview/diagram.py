@@ -1208,7 +1208,7 @@ class TreeGraphicsScene(QGraphicsScene):
         for i in range(2):
             for classname in self.project.alphabet.getClasses(True):
                 fin = False
-                cls = self.project.alphabet.classes[classname]
+                cls = self.project.alphabet.getClass[classname]
                 for tpname in cls.getLinkTypes():
                     t = cls.types[tpname]
                     if i > 0 or not t.isCopyLink():
