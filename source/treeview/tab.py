@@ -124,6 +124,7 @@ class TreeTab(QTabWidget):
     def setProject(self, proj):
         if self.__proj is not None and proj is not None and self.__proj == proj:
             return
+        self.__currentTab = -10
         self.__tabs.clear()
         self.__tabWidgets = []
         self.clear()

@@ -1466,6 +1466,7 @@ class MainWindow(QMainWindow):
                 self._dockTreesList.setProject(globals.project)
 
                 # set project for tab widget:
+                self._centralStack.setCurrentIndex(0)
                 self._tabWidget.setProject(globals.project)
 
                 self._lastProjectFile = projectFile
