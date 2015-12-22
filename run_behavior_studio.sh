@@ -1,3 +1,3 @@
 #!/bin/sh
-
-python source/main.py -c config/config.xml
+SCRIPT_DIR=`dirname "$0"`
+python $SCRIPT_DIR/source/main.py -c $SCRIPT_DIR/config/config.xml $@

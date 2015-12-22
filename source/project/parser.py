@@ -38,6 +38,7 @@ __email__ = 'victor.zarubkin@gmail.com'
 ############################################################################
 
 import os
+import sys
 from xml.dom.minidom import parse, Document
 
 from .proj import Project
@@ -124,7 +125,9 @@ class ProjParser(object):
         # Loading graphic shapes file:
         shapes = projdata.getElementsByTagName('shapelib')
         if shapes and shapes[0].hasAttribute('path'):
-            plist = self.__getPath(shapes[0], the_proj.path)
+
+            plist = self.__getPathWithCommonChecking(shapes[0],the_proj)
+
             if len(plist) == 2:
                 the_proj.shapelib = shapelib.ShapeLib()
                 if not the_proj.shapelib.init(plist[1]):
@@ -141,7 +144,7 @@ class ProjParser(object):
         # Loading alphabet file:
         alphs = projdata.getElementsByTagName('alphabet')
         if alphs and alphs[0].hasAttribute('path'):
-            plist = self.__getPath(alphs[0], the_proj.path)
+            plist = self.__getPathWithCommonChecking(alphs[0],the_proj)
             if len(plist) == 2:
                 the_proj.alphabet = alphabet.Alphabet()
                 if not the_proj.alphabet.load(plist[1]) or len(the_proj.alphabet) < 1:
@@ -240,13 +243,32 @@ class ProjParser(object):
             # saving tree path
             the_proj.tree_paths.append(treesFiles[0])  # treepath)
 
+    def __getPathWithCommonChecking(self, xml_node, the_proj):
+        is_common_lib = False
+        if xml_node.hasAttribute('common'):
+            is_common_lib = xml_node.getAttribute('common') == "True"
+        if is_common_lib:
+            #TODO yse: get path to common resources
+            _path = xml_node.getAttribute('path')
+            script_path = os.path.dirname(os.path.abspath(__file__))
+            config_dir = os.path.join(script_path, "../../config/")
+            path_to_common = os.path.join(config_dir, _path)
+            plist = self.__getPathStr(path_to_common, the_proj.path)
+        else:
+            plist = self.__getPath(xml_node, the_proj.path)
+
+        return plist
+
     # Auxiliary method, reading path from xml node.
     # It returns a tuple (a list) of two paths:
     # first is relative to project's directory,
     # and second is full path
     def __getPath(self, xml_node, proj_path):
         path = xml_node.getAttribute('path')
-        path = relativePath(path, proj_path)  # getting relative path
+        return self.__getPathStr(path,proj_path)
+
+    def __getPathStr(self, _path, proj_path):
+        path = relativePath(_path, proj_path)  # getting relative path
         if path is None or not path:
             return tuple()
 

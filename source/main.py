@@ -267,6 +267,9 @@ def main(argv):
             elif opt in ('-d', '--debug'):
                 appArgs.debug = True
 
+    if len(args)>0:
+        appArgs.project_for_opening = args[0]
+
     if not _readConfig(appArgs):  # read icons path
         mb = QMessageBox(QMessageBox.Critical, 'Configuration Error',
                          'Can\'t load application configuration!<br/>'

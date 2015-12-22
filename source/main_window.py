@@ -99,6 +99,8 @@ class AppArgs(object):
         self.config_file_default = True
         self.debug = False
 
+        self.project_for_opening = ""
+
 ########################################################################################################################
 ########################################################################################################################
 
@@ -754,6 +756,11 @@ class MainWindow(QMainWindow):
         self._autosaveTimerRunning = False
         self._autosaveTimer = QTimer()
         self._autosaveTimer.timeout.connect(self.__autosave)
+
+        if args.project_for_opening:
+            project_path = args.project_for_opening
+            print("Open %s" % (project_path))
+            self.openProject(args.project_for_opening)
 
     #####################################################
 
