@@ -100,6 +100,8 @@ pressedKeys = []  # Current global pressed keys (Example: [Qt.Key_Ctrl, Qt.Key_C
 applicationConfigFile = [u'../config/config.xml', u'../../../data/behavior/editor/config.xml']
 applicationIconsPath = u''
 
+loadedApplicationConfigFile = ""
+
 recentProjectsFile = u'recent_projects.txt'
 recentProjects = []
 maxRecentProjects = int(10)

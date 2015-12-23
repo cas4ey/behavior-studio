@@ -248,10 +248,12 @@ class ProjParser(object):
         if xml_node.hasAttribute('common'):
             is_common_lib = xml_node.getAttribute('common') == "True"
         if is_common_lib:
-            #TODO yse: get path to common resources
             _path = xml_node.getAttribute('path')
-            script_path = os.path.dirname(os.path.abspath(__file__))
-            config_dir = os.path.join(script_path, "../../config/")
+            if globals.loadedApplicationConfigFile:
+                config_dir = os.path.dirname(globals.loadedApplicationConfigFile)
+            else:
+                print('ERROR: empty application config file!')
+                return tuple()
             path_to_common = os.path.join(config_dir, _path)
             plist = self.__getPathStr(path_to_common, the_proj.path)
         else:

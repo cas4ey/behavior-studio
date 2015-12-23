@@ -140,6 +140,7 @@ def _readConfig(args):
         print('')
         return False
 
+    globals.loadedApplicationConfigFile = configFile
     if err:
         print('')
 
