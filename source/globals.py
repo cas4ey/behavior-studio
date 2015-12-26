@@ -33,9 +33,13 @@ __version__ = '1.3.0'  # this is last application version when this script file 
 __email__ = 'victor.zarubkin@gmail.com'
 ############################################################################
 
+import re
+import os
+
 from PySide.QtCore import Signal as QtSignal, QObject
 from language import trStr
 from treenode import Uid, TreeNodeDesc
+from auxtypes import toUnixPath
 
 ########################################################################################################################
 ########################################################################################################################
@@ -79,6 +83,32 @@ def versionFromStr(versionString):
 
 ########################################################################################################################
 
+
+def get(var_name):
+    return globals().get(var_name, None)
+
+
+def change(var_name, val):
+    globals()[var_name] = val
+
+
+def processVars(text):
+
+    def __processVars(simple_text):
+        global_variables = re.findall(r'\$\{.*?\}', simple_text)
+        if not global_variables:
+            return simple_text
+        global_variables = [(a, re.sub(r'[\$\{\}]', '', a)) for a in global_variables]
+        for text_name, var_name in global_variables:
+            simple_text = simple_text.replace(text_name, globals().get(var_name, ''))
+        return simple_text
+
+    if isinstance(text, list):
+        return [__processVars(a) for a in text]
+
+    return __processVars(text)
+
+
 version = versionFromStr(__version__)  # Current application version (It is a tuple. Example: (1, 2, 1))
 strVersion = str(__version__)  # Current application version string (example: '1.2.1')
 intVersion = versionToInt(version)  # Current application version digits packed into single integer (example: 121)
@@ -97,10 +127,30 @@ scaleMin = 3.0  # Minimum scaling factor for graphics scene (Initial value is 10
 
 pressedKeys = []  # Current global pressed keys (Example: [Qt.Key_Ctrl, Qt.Key_C])
 
-applicationConfigFile = [u'../config/config.xml', u'../../../data/behavior/editor/config.xml']
+rootDirectory = u'.'
+
+# Default paths to configuration file
+applicationConfigFile = [
+    u'${rootDirectory}/config/config.xml',
+    u'../config/config.xml',
+    u'../../../data/behavior/editor/config.xml'
+]
+
 applicationIconsPath = u''
 
-loadedApplicationConfigFile = ""
+# Default paths to Behavior alphabet file
+applicationAlphabetPath = [
+    u'${rootDirectory}/config/behavior_alphabet.xml',
+    u'../config/behavior_alphabet.xml'
+]
+
+# Defaults paths to Diagram shapes file
+applicationShapesPath = [
+    u'${rootDirectory}/config/diagram_shapes.xml',
+    u'../config/diagram_shapes.xml'
+]
+
+loadedApplicationConfigFile = u''
 
 recentProjectsFile = u'recent_projects.txt'
 recentProjects = []

@@ -757,9 +757,10 @@ class MainWindow(QMainWindow):
         self._autosaveTimer = QTimer()
         self._autosaveTimer.timeout.connect(self.__autosave)
 
+        print('debug: APPLICATION ROOT DIRECTORY is \"%s\".' % globals.rootDirectory)
         if args.project_for_opening:
             project_path = args.project_for_opening
-            print("Open %s" % (project_path))
+            print('info: Opening %s' % project_path)
             self.openProject(args.project_for_opening)
 
     #####################################################

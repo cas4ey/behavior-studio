@@ -47,18 +47,18 @@ from . import shapelib
 from . import liparser
 from . import treeparser
 
-from auxtypes import processString, toUnixPath, relativePath
+from auxtypes import processString, absPath, toUnixPath, relativePath
 import globals
 
 
-def absPath(path, source=''):
-    if path is None or not path:
-        return None
-    if not os.path.exists(path):
-        return None
-    if os.path.isabs(path):
-        return toUnixPath(path)
-    return toUnixPath(os.path.abspath(path))
+# def absPath(path, source=''):
+#     if path is None or not path:
+#         return None
+#     if not os.path.exists(path):
+#         return None
+#     if os.path.isabs(path):
+#         return toUnixPath(path)
+#     return toUnixPath(os.path.abspath(path))
 
 #######################################################################################################################
 #######################################################################################################################
@@ -123,17 +123,7 @@ class ProjParser(object):
             the_proj.name = 'unknown project'
 
         # Loading graphic shapes file:
-        shapes = projdata.getElementsByTagName('shapelib')
-        if shapes and shapes[0].hasAttribute('path'):
-
-            plist = self.__getPathWithCommonChecking(shapes[0],the_proj)
-
-            if len(plist) == 2:
-                the_proj.shapelib = shapelib.ShapeLib()
-                if not the_proj.shapelib.init(plist[1]):
-                    print('ERROR: can\'t load shape library from \"{0}\".'.format(plist[1]))
-                    the_proj.shapelib = None
-
+        self.__openDiagramShapes(projdata, the_proj)
         if the_proj.shapelib is None:
             print('ERROR: shape library is not specified for this project. (tag <shapelib path=\"\"/>)')
             return None
@@ -142,19 +132,7 @@ class ProjParser(object):
         print('')
 
         # Loading alphabet file:
-        alphs = projdata.getElementsByTagName('alphabet')
-        if alphs and alphs[0].hasAttribute('path'):
-            plist = self.__getPathWithCommonChecking(alphs[0],the_proj)
-            if len(plist) == 2:
-                the_proj.alphabet = alphabet.Alphabet()
-                if not the_proj.alphabet.load(plist[1]) or len(the_proj.alphabet) < 1:
-                    print('ERROR: Can\'t load alphabet from \'{0}\'!'.format(plist[1]))
-                    print('')
-                    return None
-                else:
-                    print('ok: Alphabet file \'{0}\' was loaded successfully'.format(plist[1]))
-                    print('')
-
+        self.__openAlphabetFile(projdata, the_proj)
         if the_proj.alphabet is None:
             print('ERROR: project requires alphabet file! (tag <alphabet path=\"\"/>)')
             return None
@@ -180,6 +158,124 @@ class ProjParser(object):
         the_proj.modified = False
 
         return the_proj
+
+    def __openDiagramShapes(self, projdata, the_proj):
+        shapes = projdata.getElementsByTagName('shapelib')
+        if shapes and shapes[0].hasAttribute('path'):
+
+            plist = self.__getPathWithCommonChecking(shapes[0], the_proj)
+
+            if len(plist) == 2:
+                the_proj.shapelib = shapelib.ShapeLib()
+                if not the_proj.shapelib.init(plist[1]):
+                    print('warning: Can\'t load shape library from \"{0}\".'.format(plist[1]))
+                    the_proj.shapelib = None
+            elif plist:
+                print('warning: Can\'t load shape library from \"{0}\".'.format(plist[0]))
+            else:
+                print('warning: Can\'t load shape library from \"{0}\".'.format(shapes[0]))
+
+        if the_proj.shapelib is None:
+            print('info: Trying to load default diagram shapes...')
+            try_paths = []
+            if isinstance(globals.applicationShapesPath, list):
+                try_paths = globals.applicationShapesPath
+            else:
+                try_paths.append(globals.applicationShapesPath)
+
+            okay = False
+            err = False
+            for path in try_paths:
+                the_file = path
+
+                if the_file is None:
+                    print('error: Unexpected error: empty path to diagram shapes file!')
+                    continue
+
+                if not os.path.isabs(the_file):
+                    print('debug: generating absPath for \"{0}\" relative to \"{1}\"'.format(the_file, globals.rootDirectory))
+                    the_file = absPath(the_file, globals.rootDirectory)  # make full path from relative path
+                else:
+                    print('debug: the path \"%s\" is abs!' % the_file)
+                    the_file = toUnixPath(the_file)
+
+                if the_file is None:
+                    err = True
+                    print(u'warning: Diagram shapes file \"{0}\" does not exist!'.format(path))
+                    continue
+
+                if not os.path.exists(the_file):
+                    err = True
+                    print(u'warning: Diagram shapes file \"{0}\" does not exist!'.format(the_file))
+                    continue
+
+                the_proj.shapelib = shapelib.ShapeLib()
+                if not the_proj.shapelib.init(the_file):
+                    print('warning: Can\'t load shape library from \"{0}\".'.format(the_file))
+                    the_proj.shapelib = None
+                    continue
+
+                okay = True
+                return
+
+    def __openAlphabetFile(self, projdata, the_proj):
+        alphs = projdata.getElementsByTagName('alphabet')
+        if alphs and alphs[0].hasAttribute('path'):
+            plist = self.__getPathWithCommonChecking(alphs[0], the_proj)
+            if len(plist) == 2:
+                the_proj.alphabet = alphabet.Alphabet()
+                if not the_proj.alphabet.load(plist[1]) or len(the_proj.alphabet) < 1:
+                    print('warning: Can\'t load alphabet from \'{0}\'!'.format(plist[1]))
+                    print('')
+                    the_proj.alphabet = None
+                else:
+                    print('ok: Alphabet file \'{0}\' was loaded successfully'.format(plist[1]))
+                    print('')
+                    return
+            elif plist:
+                print('warning: Can\'t load alphabet from \"{0}\".'.format(plist[0]))
+            else:
+                print('warning: Can\'t load alphabet from \"{0}\".'.format(alphs[0]))
+
+        if the_proj.alphabet is None:
+            print('info: Trying to load default behavior alphabet...')
+            try_paths = []
+            if isinstance(globals.applicationAlphabetPath, list):
+                try_paths = globals.applicationAlphabetPath
+            else:
+                try_paths.append(globals.applicationAlphabetPath)
+
+            okay = False
+            err = False
+            for path in try_paths:
+                the_file = path
+
+                if not os.path.isabs(the_file):
+                    the_file = absPath(the_file, globals.rootDirectory)  # make full path from relative path
+                else:
+                    the_file = toUnixPath(the_file)
+
+                if the_file is None:
+                    err = True
+                    print(u'warning: Alphabet file \"{0}\" does not exist!'.format(path))
+                    continue
+
+                if not os.path.exists(the_file):
+                    err = True
+                    print(u'warning: Alphabet file \"{0}\" does not exist!'.format(the_file))
+                    continue
+
+                the_proj.alphabet = alphabet.Alphabet()
+                if not the_proj.alphabet.load(the_file) or len(the_proj.alphabet) < 1:
+                    print('warning: Can\'t load alphabet from \'{0}\'!'.format(the_file))
+                    print('')
+                    the_proj.alphabet = None
+                    continue
+
+                okay = True
+                print('ok: Alphabet file \'{0}\' was loaded successfully'.format(the_file))
+                print('')
+                return
 
     # Load node libraries.
     # the_proj - reference to project
@@ -246,7 +342,8 @@ class ProjParser(object):
     def __getPathWithCommonChecking(self, xml_node, the_proj):
         is_common_lib = False
         if xml_node.hasAttribute('common'):
-            is_common_lib = xml_node.getAttribute('common') == "True"
+            flag_value = xml_node.getAttribute('common').lower()
+            is_common_lib = flag_value in ('true', 'yes', '1')
         if is_common_lib:
             _path = xml_node.getAttribute('path')
             if globals.loadedApplicationConfigFile:
@@ -275,7 +372,7 @@ class ProjParser(object):
             return tuple()
 
         temp = os.path.join(os.path.dirname(proj_path), path)  # getting full path
-        temp = os.path.normpath(temp)
+        temp = toUnixPath(os.path.normpath(temp))
         if not os.path.exists(temp):
             return tuple([temp])
 

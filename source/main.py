@@ -41,6 +41,8 @@ import os
 import sys
 import getopt
 import socket
+# import inspect
+import re
 
 from time import sleep
 from xml.dom.minidom import parse
@@ -240,6 +242,15 @@ def main(argv):
 
     from main_window import AppArgs, MainWindow
 
+    start_path = os.environ.get('BEHAVIOR_STUDIO_ROOT', None)
+    if start_path is None:
+        globals.rootDirectory = os.getcwd()
+        # globals.rootDirectory = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    else:
+        globals.rootDirectory = start_path
+
+    globals.rootDirectory = toUnixPath(os.path.normpath(globals.rootDirectory))
+
     # Read input args
     appArgs = AppArgs(argv)
     opts = None
@@ -268,8 +279,14 @@ def main(argv):
             elif opt in ('-d', '--debug'):
                 appArgs.debug = True
 
-    if len(args)>0:
-        appArgs.project_for_opening = args[0]
+    globals.applicationConfigFile = globals.processVars(globals.applicationConfigFile)
+    appArgs.config_file = globals.processVars(appArgs.config_file)
+
+    globals.applicationAlphabetPath = globals.processVars(globals.applicationAlphabetPath)
+    globals.applicationShapesPath = globals.processVars(globals.applicationShapesPath)
+
+    if args:
+        appArgs.project_for_opening = toUnixPath(args[0])
 
     if not _readConfig(appArgs):  # read icons path
         mb = QMessageBox(QMessageBox.Critical, 'Configuration Error',
