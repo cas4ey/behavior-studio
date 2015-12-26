@@ -50,10 +50,11 @@ def processString(string):
 
 
 def toUnixPath(path):
-    sub = path.split('\\')
-    if len(sub) < 2:
-        return path
-    return '/'.join(sub)
+    return path.replace('\\', '/')
+    # sub = path.split('\\')
+    # if len(sub) < 2:
+    #     return path
+    # return '/'.join(sub)
 
 
 def relativePath(path, source):
