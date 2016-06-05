@@ -5,7 +5,7 @@
     language="eng"
     connectors="polyline"
     maxRecentProjects="10"
-    maxBehaviorTreeHistory="40"
+    maxBehaviorTreeHistory="10"
     editableLinks="yes"
     saveLibs="yes"
     editLibs="yes"
