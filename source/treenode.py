@@ -2044,7 +2044,7 @@ class BehaviorTree(object):
                 else:
                     refname = fullname
                 globals.historySignals.pushState.emit(u'Remove behavior tree \'{0}\''.format(refname))
-            self.removeDisconnectedNodes(fullname, self.__branches[fullname].uid())
+            self.removeDisconnectedNodes(fullname, self.__branches[fullname])
             del self.__branches[fullname]
             del self.__disconnectedNodes[fullname]
             if not silent:
